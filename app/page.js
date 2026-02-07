@@ -128,7 +128,7 @@ export default function Home() {
                       {fmtPrice(token.priceUsd)} · MCap {fmtMcap(token.marketCap)}
                     </div>
                   </div>
-                  <a href={token.dexUrl || token.pumpUrl || `https://pump.fun/coin/${token.mintAddress}`} target="_blank" rel="noopener" className="btn btn-trade">Trade</a>
+                  <a href={token.pumpUrl || `https://pump.fun/coin/${token.mintAddress}`} target="_blank" rel="noopener" className="btn btn-trade">Trade</a>
                 </div>
               ))
             )}
@@ -176,8 +176,7 @@ export default function Home() {
                       <div className="token-feed-desc">{token.description}</div>
                     </div>
                     <div className="token-feed-actions">
-                      <a href={token.pumpUrl || `https://pump.fun/coin/${token.mintAddress}`} target="_blank" rel="noopener" className="btn btn-sm btn-secondary">Post</a>
-                      <a href={token.dexUrl || token.pumpUrl || `https://pump.fun/coin/${token.mintAddress}`} target="_blank" rel="noopener" className="btn btn-sm btn-trade">Trade</a>
+                      <a href={token.pumpUrl || `https://pump.fun/coin/${token.mintAddress}`} target="_blank" rel="noopener" className="btn btn-sm btn-trade">Trade</a>
                     </div>
                   </div>
                 ))
