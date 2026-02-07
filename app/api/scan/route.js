@@ -17,7 +17,7 @@ export async function GET(request) {
     const protocol = origin.includes('localhost') ? 'http' : 'https';
     const baseUrl = `${protocol}://${origin}`;
 
-    const platforms = ['moltbook', 'fourclaw', 'moltx'];
+    const platforms = ['moltbook', 'fourclaw'];
     const results = {};
 
     for (const platform of platforms) {

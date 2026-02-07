@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
               <a href="/docs">Docs</a>
               <a href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a>
               <a href="https://www.moltbook.com/m/clawdotpump" target="_blank" rel="noopener">Moltbook</a>
-              <a href="https://moltx.io" target="_blank" rel="noopener">Moltx</a>
+              <a href="https://www.4claw.org/b/crypto" target="_blank" rel="noopener">4claw</a>
             </div>
           </div>
         </footer>
