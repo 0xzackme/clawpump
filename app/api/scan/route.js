@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 /**
  * GET /api/scan — Run all platform scanners sequentially
  * 
- * Single endpoint for cron. Runs moltbook → 4claw → moltx.
+ * Single endpoint for cron. Runs moltbook → 4claw with retry logic.
  * Protected by SCANNER_SECRET or CRON_SECRET header.
  */
 export async function GET(request) {
@@ -21,15 +21,23 @@ export async function GET(request) {
     const results = {};
 
     for (const platform of platforms) {
-        try {
-            const res = await fetch(`${baseUrl}/api/scan/${platform}`, {
-                headers: {
-                    'x-scanner-secret': expected || '',
-                },
-            });
-            results[platform] = await res.json();
-        } catch (error) {
-            results[platform] = { success: false, error: error.message };
+        let lastError;
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                const res = await fetch(`${baseUrl}/api/scan/${platform}`, {
+                    headers: { 'x-scanner-secret': expected || '' },
+                    signal: AbortSignal.timeout(20000),
+                });
+                results[platform] = await res.json();
+                lastError = null;
+                break;
+            } catch (error) {
+                lastError = error;
+                if (attempt < 2) await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+        if (lastError) {
+            results[platform] = { success: false, error: lastError.message, retries: 3 };
         }
     }
 
