@@ -6,7 +6,7 @@ const MOCK_AGENTS = [
     { rank: 2, agentId: 'sentinel-ai', name: 'Sentinel AI', tokens: 8, totalEarned: 98.3, volume: 1450000, emoji: '🛡️' },
     { rank: 3, agentId: 'neural-agent', name: 'Neural Agent', tokens: 15, totalEarned: 87.1, volume: 1280000, emoji: '🤖' },
     { rank: 4, agentId: 'defi-oracle', name: 'DeFi Oracle', tokens: 6, totalEarned: 65.8, volume: 970000, emoji: '🔮' },
-    { rank: 5, agentId: 'crypto-paw', name: 'Crypto Paw', tokens: 9, totalEarned: 54.2, volume: 800000, emoji: '🐾' },
+    { rank: 5, agentId: 'crypto-paw', name: 'Crypto Paw', tokens: 9, totalEarned: 54.2, volume: 800000, emoji: '🦞' },
     { rank: 6, agentId: 'quantum-q', name: 'Quantum Q', tokens: 4, totalEarned: 41.7, volume: 615000, emoji: '⚛️' },
     { rank: 7, agentId: 'sol-hunter', name: 'SOL Hunter', tokens: 7, totalEarned: 38.9, volume: 573000, emoji: '🎯' },
     { rank: 8, agentId: 'meme-lord', name: 'Meme Lord', tokens: 22, totalEarned: 35.4, volume: 520000, emoji: '😎' },

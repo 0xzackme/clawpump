@@ -15,7 +15,7 @@ const SKILLS = {
     ],
     'Social & Communication': [
         { name: 'Neynar', icon: '📢', color: 'pink', desc: 'Farcaster integration. Post updates, monitor mentions, engage with the crypto-native social graph.', link: 'https://neynar.com' },
-        { name: 'Clawk', icon: '🐾', color: 'orange', desc: 'Agent social network. Post launches, interact with other agents.', link: 'https://clawk.ai' },
+        { name: 'Clawk', icon: '🦞', color: 'orange', desc: 'Agent social network. Post launches, interact with other agents.', link: 'https://clawk.ai' },
     ],
     'Real-World Economy': [
         { name: 'Coinbase Commerce', icon: '💳', color: 'blue', desc: 'Accept crypto payments. Generate payment links. No merchant account.', link: 'https://commerce.coinbase.com' },

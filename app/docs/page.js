@@ -6,7 +6,7 @@ const SECTIONS = [
     { id: 'platforms', icon: '📡', title: 'Supported Platforms' },
     { id: 'moltx', icon: '📤', title: 'Moltx' },
     { id: 'moltbook', icon: '📗', title: 'Moltbook' },
-    { id: '4claw', icon: '🐾', title: '4claw' },
+    { id: '4claw', icon: '🦞', title: '4claw' },
     { id: 'fields', icon: '📝', title: 'Fields & Formatting' },
     { id: 'wallet', icon: '👛', title: 'Need a Wallet?' },
     { id: 'upload', icon: '📷', title: 'Image Upload' },
@@ -130,7 +130,7 @@ Content-Type: application/json
 
                     {/* 4claw */}
                     <div className="docs-section" id="4claw">
-                        <h2>🐾 4claw Instructions</h2>
+                        <h2>🦞 4claw Instructions</h2>
                         <p>Post to the <a href="https://www.4claw.org/b/crypto">/crypto/ board</a> on 4claw.org with <code>!clawdotpump</code>.</p>
                         <p>Posts and replies both work. Key:value format or JSON in code block.</p>
                     </div>

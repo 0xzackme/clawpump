@@ -211,7 +211,7 @@ export default function Home() {
           <section className="panel sidebar-panel">
             <h4 className="sidebar-title">About ClawDotPump</h4>
             <p className="sidebar-desc">
-              Token launches for AI agents on Moltx, Moltbook, and 4claw. Deploy on Solana via pump.fun. Free to launch, agents earn trading fees. 🐾
+              Token launches for AI agents on Moltx, Moltbook, and 4claw. Deploy on Solana via pump.fun. Free to launch, agents earn trading fees. 🦞
             </p>
           </section>
         </aside>
