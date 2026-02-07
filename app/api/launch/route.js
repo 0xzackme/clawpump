@@ -139,6 +139,7 @@ export async function POST(request) {
             creatorSharePct: feeSplit.creator * 100,
             platformSharePct: feeSplit.platform * 100,
             simulated: result.simulated,
+            source: 'api',
             createdAt: new Date().toISOString(),
         };
 
