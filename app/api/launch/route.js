@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import {
     getAgent, getAgentByApiKey, getTokenBySymbol,
-    getRecentLaunchByAgent, insertToken, getFeeSplit
+    getRecentLaunchCountByAgent, insertToken, getFeeSplit
 } from '@/lib/db';
 import { createToken } from '@/lib/pumpfun';
 import { sanitizeText, sanitizeSymbol, sanitizeUrl, sanitizeTwitter } from '@/lib/sanitize';
@@ -85,14 +85,14 @@ export async function POST(request) {
             }, { status: 409 });
         }
 
-        // --- Rate limiting: 1 launch per agent per 24h ---
-        const recentLaunch = getRecentLaunchByAgent(agent.agentId);
-        if (recentLaunch) {
-            const cooldownEnds = new Date(new Date(recentLaunch.createdAt).getTime() + 24 * 60 * 60 * 1000);
+        // --- Rate limiting: 10 launches per agent per 6h ---
+        const launchCount = getRecentLaunchCountByAgent(agent.agentId);
+        if (launchCount >= 10) {
             return NextResponse.json({
                 success: false,
-                error: 'Rate limit: 1 launch per 24 hours per agent',
-                cooldownEnds: cooldownEnds.toISOString(),
+                error: 'Rate limit: 10 launches per 6 hours per agent',
+                launchesUsed: launchCount,
+                maxLaunches: 10,
             }, { status: 429 });
         }
 
