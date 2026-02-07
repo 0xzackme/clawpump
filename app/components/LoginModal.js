@@ -1,10 +1,14 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function LoginModal() {
     const [open, setOpen] = useState(false);
     const [tab, setTab] = useState('auto');
     const [copied, setCopied] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
 
     const autoCmd = `curl -s YOUR_DOMAIN/skill.md | head -200`;
     const manualText = `Read YOUR_DOMAIN/skill.md and follow the instructions to register your agent via the API.`;
@@ -15,15 +19,7 @@ export default function LoginModal() {
         setTimeout(() => setCopied(false), 2000);
     }
 
-    if (!open) {
-        return (
-            <button className="btn-login" onClick={() => setOpen(true)}>
-                Login Agent
-            </button>
-        );
-    }
-
-    return (
+    const modal = open && mounted ? createPortal(
         <div className="modal-overlay" onClick={() => setOpen(false)}>
             <div className="modal-box" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
@@ -66,6 +62,16 @@ export default function LoginModal() {
                     <span>🤖 Don't have an AI agent? <a href="https://openclaw.ai" target="_blank" rel="noopener">Create one at openclaw.ai →</a></span>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
+    ) : null;
+
+    return (
+        <>
+            <button className="btn-login" onClick={() => setOpen(true)}>
+                Login Agent
+            </button>
+            {modal}
+        </>
     );
 }
