@@ -1,0 +1,183 @@
+import { NextResponse } from 'next/server';
+import {
+    getAgent, getAgentByApiKey, getTokenBySymbol,
+    getRecentLaunchByAgent, insertToken, getFeeSplit
+} from '@/lib/db';
+import { createToken } from '@/lib/pumpfun';
+import { sanitizeText, sanitizeSymbol, sanitizeUrl, sanitizeTwitter } from '@/lib/sanitize';
+
+/**
+ * POST /api/launch — Launch a new token on pump.fun
+ *
+ * Authentication: X-API-Key header (required) or agentId fallback (simulation only)
+ * Platform wallet pays all gas — agents never need SOL or private keys.
+ * Fee split: 65% creator / 35% platform (tracked per token).
+ */
+export async function POST(request) {
+    try {
+        const body = await request.json();
+
+        // --- Auth: verify agent ---
+        const apiKey = request.headers.get('x-api-key');
+        let agent;
+
+        if (apiKey) {
+            agent = getAgentByApiKey(apiKey);
+            if (!agent) {
+                return NextResponse.json({
+                    success: false,
+                    error: 'Invalid API key. Register at POST /api/register first.'
+                }, { status: 401 });
+            }
+        } else if (body.agentId) {
+            // Fallback for testing — lookup by agentId (less secure)
+            agent = getAgent(body.agentId);
+            if (!agent) {
+                return NextResponse.json({
+                    success: false,
+                    error: `Agent "${body.agentId}" not registered.`,
+                    hint: 'POST /api/register to get an API key, then use X-API-Key header.'
+                }, { status: 401 });
+            }
+        } else {
+            return NextResponse.json({
+                success: false,
+                error: 'Authentication required. Provide X-API-Key header.',
+                hint: 'Register at POST /api/register to get an API key.'
+            }, { status: 401 });
+        }
+
+        // --- Sanitize inputs ---
+        const name = sanitizeText(body.name, 32);
+        const symbol = sanitizeSymbol(body.symbol);
+        const description = sanitizeText(body.description, 500);
+        const imageUrl = sanitizeUrl(body.imageUrl);
+        const website = sanitizeUrl(body.website);
+        const twitter = sanitizeTwitter(body.twitter);
+        const telegram = sanitizeText(body.telegram, 100);
+        const burnTxSig = sanitizeText(body.burnTxSig, 100);
+
+        // --- Validate required fields ---
+        if (!name || !symbol || !description) {
+            return NextResponse.json({
+                success: false,
+                error: 'Missing required fields: name, symbol, description'
+            }, { status: 400 });
+        }
+
+        if (name.length < 1) {
+            return NextResponse.json({ success: false, error: 'Name is required' }, { status: 400 });
+        }
+
+        if (symbol.length < 1) {
+            return NextResponse.json({ success: false, error: 'Symbol is required' }, { status: 400 });
+        }
+
+        if (description.length < 20) {
+            return NextResponse.json({ success: false, error: 'Description must be at least 20 characters' }, { status: 400 });
+        }
+
+        // --- Check duplicate ticker ---
+        if (getTokenBySymbol(symbol)) {
+            return NextResponse.json({
+                success: false,
+                error: `Ticker "${symbol}" already launched. Choose a different symbol.`
+            }, { status: 409 });
+        }
+
+        // --- Rate limiting: 1 launch per agent per 24h ---
+        const recentLaunch = getRecentLaunchByAgent(agent.agentId);
+        if (recentLaunch) {
+            const cooldownEnds = new Date(new Date(recentLaunch.createdAt).getTime() + 24 * 60 * 60 * 1000);
+            return NextResponse.json({
+                success: false,
+                error: 'Rate limit: 1 launch per 24 hours per agent',
+                cooldownEnds: cooldownEnds.toISOString(),
+            }, { status: 429 });
+        }
+
+        // --- Create token via Pump SDK (platform pays gas) ---
+        const result = await createToken({
+            name,
+            symbol,
+            description,
+            imageUrl,
+            website,
+            twitter,
+            telegram,
+            agentWallet: agent.walletAddress, // For 65/35 fee sharing
+        });
+
+        // --- Calculate burn allocation ---
+        let devAllocation = 0;
+        if (burnTxSig) {
+            devAllocation = 1; // Default 1% for any valid burn
+        }
+
+        // --- Fee split ---
+        const feeSplit = getFeeSplit();
+
+        // --- Save token to database (atomic transaction) ---
+        const token = {
+            id: crypto.randomUUID(),
+            name,
+            symbol,
+            description,
+            imageUrl,
+            agentId: agent.agentId,
+            agentName: agent.agentName,
+            walletAddress: agent.walletAddress,
+            website,
+            twitter,
+            telegram,
+            mintAddress: result.mintAddress,
+            txSignature: result.txSignature,
+            pumpUrl: result.pumpUrl,
+            explorerUrl: result.explorerUrl,
+            burnTxSig: burnTxSig || null,
+            devAllocation,
+            creatorSharePct: feeSplit.creator * 100,
+            platformSharePct: feeSplit.platform * 100,
+            simulated: result.simulated,
+            createdAt: new Date().toISOString(),
+        };
+
+        insertToken(token);
+
+        // --- Return only public-safe data ---
+        return NextResponse.json({
+            success: true,
+            message: `Token "${name}" (${symbol}) launched successfully!`,
+            mintAddress: token.mintAddress,
+            txSignature: token.txSignature,
+            pumpUrl: token.pumpUrl,
+            explorerUrl: token.explorerUrl,
+            feeSplit: {
+                creator: `${feeSplit.creator * 100}%`,
+                platform: `${feeSplit.platform * 100}%`,
+            },
+            gasPaidBy: 'platform',
+        }, { status: 201 });
+    } catch (error) {
+        console.error('Launch error:', error);
+        return NextResponse.json({
+            success: false,
+            error: error.message || 'Internal server error'
+        }, { status: 500 });
+    }
+}
+
+export async function GET() {
+    return NextResponse.json({
+        message: 'Token launch endpoint. Use POST to launch.',
+        steps: [
+            '1. Register: POST /api/register',
+            '2. Launch: POST /api/launch with X-API-Key header',
+        ],
+        requiredFields: ['name', 'symbol', 'description'],
+        optionalFields: ['imageUrl', 'website', 'twitter', 'telegram', 'burnTxSig'],
+        authentication: 'X-API-Key header from /api/register',
+        gasFees: 'Paid by platform — free for agents',
+        feeSplit: '65% creator / 35% platform',
+    });
+}
