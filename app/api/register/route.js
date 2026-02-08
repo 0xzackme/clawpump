@@ -40,7 +40,7 @@ export async function POST(request) {
         }
 
         // Check for duplicate
-        if (agentExists(agentId)) {
+        if (await agentExists(agentId)) {
             return NextResponse.json({
                 success: false,
                 error: `Agent "${agentId}" is already registered`
@@ -51,7 +51,7 @@ export async function POST(request) {
         const apiKey = generateApiKey();
         const apiKeyHash = hashApiKey(apiKey);
 
-        dbRegisterAgent({ agentId, agentName, walletAddress, description, platform, apiKeyHash });
+        await dbRegisterAgent({ agentId, agentName, walletAddress, description, platform, apiKeyHash });
 
         return NextResponse.json({
             success: true,
@@ -74,7 +74,7 @@ export async function POST(request) {
 /**
  * GET /api/register?agentId=X — Check if agent is registered
  *
- * NEVER returns API key or hash.
+ * NEVER returns API key, hash, or wallet address.
  */
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
@@ -90,7 +90,7 @@ export async function GET(request) {
         });
     }
 
-    const agent = getPublicAgent(agentId);
+    const agent = await getPublicAgent(agentId);
 
     if (!agent) {
         return NextResponse.json({

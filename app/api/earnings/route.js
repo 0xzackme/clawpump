@@ -16,8 +16,7 @@ export async function GET(request) {
         let agent;
 
         if (apiKey) {
-            // Authenticated — full earnings data
-            agent = getAgentByApiKey(apiKey);
+            agent = await getAgentByApiKey(apiKey);
             if (!agent) {
                 return NextResponse.json({
                     success: false,
@@ -25,8 +24,7 @@ export async function GET(request) {
                 }, { status: 401 });
             }
         } else if (agentId) {
-            // Public — limited summary only
-            agent = getPublicAgent(agentId);
+            agent = await getPublicAgent(agentId);
             if (!agent) {
                 return NextResponse.json({
                     success: false,
@@ -34,7 +32,6 @@ export async function GET(request) {
                 }, { status: 404 });
             }
 
-            // Public view — only basic stats, no detailed breakdown
             return NextResponse.json({
                 success: true,
                 agentId: agent.agentId,
@@ -49,8 +46,7 @@ export async function GET(request) {
             }, { status: 400 });
         }
 
-        // Authenticated view — full breakdown
-        const agentTokens = getTokensByAgent(agent.agentId);
+        const agentTokens = await getTokensByAgent(agent.agentId);
         const totalEarned = agentTokens.reduce((sum, t) => sum + (t.feesEarned || 0), 0);
         const totalPending = agentTokens.reduce((sum, t) => sum + (t.feesPending || 0), 0);
 

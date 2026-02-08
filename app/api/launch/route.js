@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import {
-    getAgent, getAgentByApiKey, getTokenBySymbol,
+    getAgentByApiKey, getTokenBySymbol,
     getRecentLaunchCountByAgent, insertToken, getFeeSplit
 } from '@/lib/db';
 import { createToken } from '@/lib/pumpfun';
@@ -9,7 +9,7 @@ import { sanitizeText, sanitizeSymbol, sanitizeUrl, sanitizeTwitter } from '@/li
 /**
  * POST /api/launch — Launch a new token on pump.fun
  *
- * Authentication: X-API-Key header (required) or agentId fallback (simulation only)
+ * Authentication: X-API-Key header (REQUIRED — no fallback).
  * Platform wallet pays all gas — agents never need SOL or private keys.
  * Fee split: 65% creator / 35% platform (tracked per token).
  */
@@ -17,33 +17,21 @@ export async function POST(request) {
     try {
         const body = await request.json();
 
-        // --- Auth: verify agent ---
+        // --- Auth: API key REQUIRED ---
         const apiKey = request.headers.get('x-api-key');
-        let agent;
-
-        if (apiKey) {
-            agent = getAgentByApiKey(apiKey);
-            if (!agent) {
-                return NextResponse.json({
-                    success: false,
-                    error: 'Invalid API key. Register at POST /api/register first.'
-                }, { status: 401 });
-            }
-        } else if (body.agentId) {
-            // Fallback for testing — lookup by agentId (less secure)
-            agent = getAgent(body.agentId);
-            if (!agent) {
-                return NextResponse.json({
-                    success: false,
-                    error: `Agent "${body.agentId}" not registered.`,
-                    hint: 'POST /api/register to get an API key, then use X-API-Key header.'
-                }, { status: 401 });
-            }
-        } else {
+        if (!apiKey) {
             return NextResponse.json({
                 success: false,
                 error: 'Authentication required. Provide X-API-Key header.',
                 hint: 'Register at POST /api/register to get an API key.'
+            }, { status: 401 });
+        }
+
+        const agent = await getAgentByApiKey(apiKey);
+        if (!agent) {
+            return NextResponse.json({
+                success: false,
+                error: 'Invalid API key. Register at POST /api/register first.'
             }, { status: 401 });
         }
 
@@ -65,20 +53,12 @@ export async function POST(request) {
             }, { status: 400 });
         }
 
-        if (name.length < 1) {
-            return NextResponse.json({ success: false, error: 'Name is required' }, { status: 400 });
-        }
-
-        if (symbol.length < 1) {
-            return NextResponse.json({ success: false, error: 'Symbol is required' }, { status: 400 });
-        }
-
         if (description.length < 20) {
             return NextResponse.json({ success: false, error: 'Description must be at least 20 characters' }, { status: 400 });
         }
 
         // --- Check duplicate ticker ---
-        if (getTokenBySymbol(symbol)) {
+        if (await getTokenBySymbol(symbol)) {
             return NextResponse.json({
                 success: false,
                 error: `Ticker "${symbol}" already launched. Choose a different symbol.`
@@ -86,7 +66,7 @@ export async function POST(request) {
         }
 
         // --- Rate limiting: 10 launches per agent per 6h ---
-        const launchCount = getRecentLaunchCountByAgent(agent.agentId);
+        const launchCount = await getRecentLaunchCountByAgent(agent.agentId);
         if (launchCount >= 10) {
             return NextResponse.json({
                 success: false,
@@ -105,19 +85,19 @@ export async function POST(request) {
             website,
             twitter,
             telegram,
-            agentWallet: agent.walletAddress, // For 65/35 fee sharing
+            agentWallet: agent.walletAddress,
         });
 
         // --- Calculate burn allocation ---
         let devAllocation = 0;
         if (burnTxSig) {
-            devAllocation = 1; // Default 1% for any valid burn
+            devAllocation = 1;
         }
 
         // --- Fee split ---
         const feeSplit = getFeeSplit();
 
-        // --- Save token to database (atomic transaction) ---
+        // --- Save token to database (transaction) ---
         const token = {
             id: crypto.randomUUID(),
             name,
@@ -140,12 +120,10 @@ export async function POST(request) {
             platformSharePct: feeSplit.platform * 100,
             simulated: result.simulated,
             source: 'api',
-            createdAt: new Date().toISOString(),
         };
 
-        insertToken(token);
+        await insertToken(token);
 
-        // --- Return only public-safe data ---
         return NextResponse.json({
             success: true,
             message: `Token "${name}" (${symbol}) launched successfully!`,

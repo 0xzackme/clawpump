@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getTokensPaginated } from '@/lib/db';
+import { getTokensPaginatedAsync } from '@/lib/db';
 
 /**
  * GET /api/market-data — Fetch real-time market data from DexScreener
@@ -9,15 +9,14 @@ import { getTokensPaginated } from '@/lib/db';
  * New tokens without DEX data get default $2,400 mcap (pump.fun initial curve).
  */
 
-const PUMP_FUN_INITIAL_MCAP = 2400; // ~$2.4K starting mcap on pump.fun
-const CACHE_TTL_MS = 60_000; // 60 seconds
+const PUMP_FUN_INITIAL_MCAP = 2400;
+const CACHE_TTL_MS = 60_000;
 
 let cache = { data: null, timestamp: 0 };
 
 async function fetchDexScreenerData(mintAddresses) {
     if (!mintAddresses.length) return {};
 
-    // DexScreener supports up to 30 addresses per request
     const results = {};
     const chunks = [];
     for (let i = 0; i < mintAddresses.length; i += 30) {
@@ -35,12 +34,10 @@ async function fetchDexScreenerData(mintAddresses) {
             if (!res.ok) continue;
 
             const pairs = await res.json();
-            // DexScreener returns array of pairs, group by baseToken address
             if (Array.isArray(pairs)) {
                 for (const pair of pairs) {
                     const mint = pair.baseToken?.address;
                     if (!mint) continue;
-                    // Keep the pair with highest liquidity for each token
                     if (!results[mint] || (pair.liquidity?.usd || 0) > (results[mint].liquidity?.usd || 0)) {
                         results[mint] = {
                             priceUsd: parseFloat(pair.priceUsd) || 0,
@@ -67,23 +64,18 @@ export async function GET() {
     try {
         const now = Date.now();
 
-        // Return cached data if fresh
         if (cache.data && (now - cache.timestamp) < CACHE_TTL_MS) {
             return NextResponse.json(cache.data);
         }
 
-        // Fetch all tokens from DB
-        const { tokens } = getTokensPaginated({ limit: 200, sort: 'new' });
+        const { tokens } = await getTokensPaginatedAsync({ limit: 200, sort: 'new' });
 
-        // Collect mint addresses for DexScreener lookup
         const mintAddresses = tokens
             .map(t => t.mintAddress)
             .filter(Boolean);
 
-        // Fetch live market data
         const dexData = await fetchDexScreenerData(mintAddresses);
 
-        // Merge DB data + DexScreener data
         const enriched = tokens.map(token => {
             const market = token.mintAddress ? dexData[token.mintAddress] : null;
 
@@ -98,11 +90,11 @@ export async function GET() {
                 pumpUrl: token.pumpUrl,
                 explorerUrl: token.explorerUrl,
                 createdAt: token.createdAt,
+                source: token.source,
                 feeSplit: {
                     creator: token.creatorSharePct || 65,
                     platform: token.platformSharePct || 35,
                 },
-                // Market data — use DexScreener if available, defaults for new tokens
                 priceUsd: market?.priceUsd || 0,
                 marketCap: market?.marketCap || PUMP_FUN_INITIAL_MCAP,
                 volume24h: market?.volume24h || 0,
@@ -122,7 +114,6 @@ export async function GET() {
             cacheTtlMs: CACHE_TTL_MS,
         };
 
-        // Update cache
         cache = { data: result, timestamp: now };
 
         return NextResponse.json(result);

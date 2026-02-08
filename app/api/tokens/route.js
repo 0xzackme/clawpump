@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getTokensPaginated } from '@/lib/db';
+import { getTokensPaginatedAsync } from '@/lib/db';
 
 /**
  * GET /api/tokens — List launched tokens (public-safe fields only)
@@ -13,7 +13,7 @@ export async function GET(request) {
         const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100);
         const offset = Math.max(parseInt(searchParams.get('offset') || '0', 10), 0);
 
-        const result = getTokensPaginated({ sort, limit, offset });
+        const result = await getTokensPaginatedAsync({ sort, limit, offset });
 
         return NextResponse.json({
             success: true,
