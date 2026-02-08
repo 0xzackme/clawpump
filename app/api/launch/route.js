@@ -120,6 +120,8 @@ export async function POST(request) {
             platformSharePct: feeSplit.platform * 100,
             simulated: result.simulated,
             source: 'api',
+            feeSharingStatus: result.feeSharingStatus || 'pending',
+            feeSharingTx: result.feeSharingTx || null,
         };
 
         await insertToken(token);
@@ -135,6 +137,7 @@ export async function POST(request) {
                 creator: `${feeSplit.creator * 100}%`,
                 platform: `${feeSplit.platform * 100}%`,
             },
+            feeSharingStatus: result.feeSharingStatus || 'pending',
             gasPaidBy: 'platform',
         }, { status: 201 });
     } catch (error) {
