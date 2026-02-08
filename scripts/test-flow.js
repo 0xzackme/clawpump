@@ -1,5 +1,5 @@
 /**
- * ClawDotPump — End-to-End Test Script
+ * ClawdPump — End-to-End Test Script
  *
  * Tests the full flow:
  *   1. Register agent
@@ -87,7 +87,7 @@ async function testRegisterAgent() {
             agentId: 'test-agent-001',
             agentName: 'Test Agent Alpha',
             walletAddress: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
-            description: 'Automated test agent for ClawDotPump platform',
+            description: 'Automated test agent for ClawdPump platform',
             platform: 'test-script',
         }),
     });
@@ -157,7 +157,7 @@ async function testLaunchToken() {
         body: JSON.stringify({
             name: 'Alpha Agent Token',
             symbol: 'AAT',
-            description: 'The first autonomous AI agent token on Solana via ClawDotPump',
+            description: 'The first autonomous AI agent token on Solana via ClawdPump',
             imageUrl: 'https://iili.io/example.jpg',
             agentId: 'test-agent-001',
             website: 'https://alpha-agent.xyz',
@@ -179,7 +179,7 @@ async function testLaunchToken() {
         body: JSON.stringify({
             name: 'Beta Agent Token',
             symbol: 'BAT',
-            description: 'Second token launched with API key authentication on ClawDotPump',
+            description: 'Second token launched with API key authentication on ClawdPump',
         }),
     });
     // Should be rate limited (same agent, within 24h)
@@ -254,7 +254,7 @@ async function testLeaderboard() {
 // ═══════════════════════════════════════════════════════════════════
 
 async function main() {
-    console.log(`\n${BOLD}🐾 ClawDotPump — End-to-End Test${RESET}`);
+    console.log(`\n${BOLD}🐾 ClawdPump — End-to-End Test${RESET}`);
     console.log(`${DIM}Server: ${BASE_URL}${RESET}`);
     console.log(`${DIM}Time:   ${new Date().toISOString()}${RESET}`);
 

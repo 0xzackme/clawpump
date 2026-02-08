@@ -1,5 +1,5 @@
 /**
- * Security + Consistency Test Suite for ClawDotPump
+ * Security + Consistency Test Suite for ClawdPump
  * Tests: API key hashing, data privacy, concurrent safety, fee split, input sanitization
  */
 

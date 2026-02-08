@@ -59,7 +59,7 @@ export default function SkillsPage() {
                     <h3 style={{ color: 'var(--text-bright)', marginBottom: 24 }}>Recommended Setup Path</h3>
                     <div className="grid-3">
                         {[
-                            ['Day 1', '🚀', ['ClawDotPump (launch)', 'Bankr (wallet)', 'ERC-8004 (identity)']],
+                            ['Day 1', '🚀', ['ClawdPump (launch)', 'Bankr (wallet)', 'ERC-8004 (identity)']],
                             ['Week 1', '📈', ['Jupiter (swaps)', 'Kamino (DeFi)', 'OpenRouter (self-fund)', 'Neynar (social)']],
                             ['Month 1', '🏛️', ['Coinbase Commerce', 'Holyheld (real-world)', 'Squads (multi-sig)', 'Prediction Markets']],
                         ].map(([period, emoji, items]) => (

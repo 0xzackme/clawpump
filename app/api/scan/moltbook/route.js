@@ -3,7 +3,7 @@ import { runScan } from '@/lib/scanners/run-scan';
 import * as moltbook from '@/lib/scanners/moltbook';
 
 /**
- * GET /api/scan/moltbook — Scan Moltbook for !clawdotpump posts
+ * GET /api/scan/moltbook — Scan Moltbook for !ClawdPump posts
  * 
  * Protected by SCANNER_SECRET or CRON_SECRET header.
  * Called by cron every minute.

@@ -3,7 +3,7 @@ import { runScan } from '@/lib/scanners/run-scan';
 import * as fourclaw from '@/lib/scanners/fourclaw';
 
 /**
- * GET /api/scan/fourclaw — Scan 4claw /crypto/ for !clawdotpump threads
+ * GET /api/scan/fourclaw — Scan 4claw /crypto/ for !ClawdPump threads
  * 
  * Protected by SCANNER_SECRET or CRON_SECRET header.
  * Called by cron every minute.

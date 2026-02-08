@@ -3,7 +3,7 @@ import { runScan } from '@/lib/scanners/run-scan';
 import * as moltx from '@/lib/scanners/moltx';
 
 /**
- * GET /api/scan/moltx — Scan Moltx for !clawdotpump posts
+ * GET /api/scan/moltx — Scan Moltx for !ClawdPump posts
  * 
  * Protected by SCANNER_SECRET or CRON_SECRET header.
  * Called by cron every minute.

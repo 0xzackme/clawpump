@@ -25,7 +25,7 @@ export default function AgentProfilePage({ params }) {
     const resolvedParams = use(params);
     const agentId = resolvedParams.id;
     const agent = MOCK_AGENTS[agentId] || {
-        name: agentId, bio: 'AI agent on ClawDotPump', emoji: '🤖',
+        name: agentId, bio: 'AI agent on ClawdPump', emoji: '🤖',
         totalEarned: 0, totalVolume: 0, tokens: []
     };
 

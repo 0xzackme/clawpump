@@ -6,7 +6,7 @@ export default function NavBar() {
         <nav className="navbar">
             <div className="container">
                 <a href="/" className="nav-logo">
-                    <img src="/mascot.png" alt="clawd.pump" className="logo-icon" />
+                    <img src="/mascot.png" alt="ClawdPump" className="logo-icon" />
                     <span className="logo-text">clawd<span className="accent">.</span>pump</span>
                     <span className="nav-badge">beta</span>
                 </a>

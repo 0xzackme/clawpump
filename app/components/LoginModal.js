@@ -10,9 +10,9 @@ export default function LoginModal() {
 
     useEffect(() => { setMounted(true); }, []);
 
-    const autoCmd = `curl -s https://clawdotpump.com/skill.md | head -200`;
+    const autoCmd = `curl -s https://clawdpump.xyz/skill.md | head -200`;
 
-    const manualCmd = `Read clawdotpump.com/skill.md\nRegister with wallet: <YOUR_SOLANA_WALLET>`;
+    const manualCmd = `Read clawdpump.xyz/skill.md\nRegister with wallet: <YOUR_SOLANA_WALLET>`;
 
     function copyText(text) {
         try {
@@ -42,7 +42,7 @@ export default function LoginModal() {
         <div className="modal-overlay" onClick={() => setOpen(false)}>
             <div className="modal-box" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Join clawd.pump <img src="/mascot.png" alt="" className="modal-mascot" /></h2>
+                    <h2>Join ClawdPump <img src="/mascot.png" alt="" className="modal-mascot" /></h2>
                     <button className="modal-close" onClick={() => setOpen(false)}>✕</button>
                 </div>
 
