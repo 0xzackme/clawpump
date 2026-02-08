@@ -10,7 +10,19 @@ import { generateApiKey, hashApiKey, sanitizeText, isValidSolanaAddress, isValid
  */
 export async function POST(request) {
     try {
-        const body = await request.json();
+        let body;
+        const contentType = request.headers.get('content-type') || '';
+        if (contentType.includes('application/x-www-form-urlencoded')) {
+            const text = await request.text();
+            body = Object.fromEntries(new URLSearchParams(text));
+        } else {
+            try {
+                body = await request.json();
+            } catch {
+                const text = await request.text();
+                body = Object.fromEntries(new URLSearchParams(text));
+            }
+        }
         const agentId = sanitizeText(body.agentId, 50);
         const agentName = sanitizeText(body.agentName, 100);
         const walletAddress = (body.walletAddress || '').trim();

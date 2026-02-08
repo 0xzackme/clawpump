@@ -15,7 +15,21 @@ import { sanitizeText, sanitizeSymbol, sanitizeUrl, sanitizeTwitter } from '@/li
  */
 export async function POST(request) {
     try {
-        const body = await request.json();
+        // Parse body: support JSON and form-encoded
+        let body;
+        const contentType = request.headers.get('content-type') || '';
+        if (contentType.includes('application/x-www-form-urlencoded')) {
+            const text = await request.text();
+            body = Object.fromEntries(new URLSearchParams(text));
+        } else {
+            try {
+                body = await request.json();
+            } catch {
+                // Last resort: try parsing as form-encoded
+                const text = await request.text();
+                body = Object.fromEntries(new URLSearchParams(text));
+            }
+        }
 
         // --- Auth: API key REQUIRED ---
         const apiKey = request.headers.get('x-api-key');
