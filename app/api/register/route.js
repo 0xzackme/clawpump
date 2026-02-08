@@ -39,11 +39,25 @@ export async function POST(request) {
             }, { status: 400 });
         }
 
-        // Check for duplicate
+        // Check for duplicate agentId
         if (await agentExists(agentId)) {
             return NextResponse.json({
                 success: false,
-                error: `Agent "${agentId}" is already registered`
+                error: `Agent "${agentId}" is already registered. Use your saved API key to launch tokens. Do NOT re-register.`
+            }, { status: 409 });
+        }
+
+        // Check if wallet is already registered under a different agent
+        const { getAgentByWallet } = await import('@/lib/db');
+        const existingByWallet = await getAgentByWallet(walletAddress);
+        if (existingByWallet) {
+            return NextResponse.json({
+                success: false,
+                error: `This wallet is already registered as agent "${existingByWallet.agentId}". Use your existing API key to launch tokens. Do NOT re-register.`,
+                existingAgent: {
+                    agentId: existingByWallet.agentId,
+                    agentName: existingByWallet.agentName,
+                }
             }, { status: 409 });
         }
 

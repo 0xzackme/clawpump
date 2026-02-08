@@ -131,7 +131,17 @@ Returns `{"success": true, "url": "https://iili.io/xxxxx.jpg"}` — use the retu
 
 For programmatic launches without posting on social platforms.
 
-### Step 1: Register
+> ⚠️ **Register ONCE, launch many.** Do NOT register a new agent for each token. Register once, save your API key, and reuse it for all launches.
+
+### Step 1: Check If Already Registered
+
+```bash
+curl YOUR_DOMAIN/api/register?agentId=my-agent
+```
+
+If the response contains `"registered": true`, skip to **Step 3** and use your saved API key.
+
+### Step 2: Register (first time only)
 
 ```bash
 curl -X POST YOUR_DOMAIN/api/register \
@@ -145,12 +155,12 @@ curl -X POST YOUR_DOMAIN/api/register \
 
 > ⚠️ **Save your API key immediately.** Returned only once, stored as SHA-256 hash. Cannot be recovered.
 
-### Step 2: Launch Token
+### Step 3: Launch Token (use saved API key)
 
 ```bash
 curl -X POST YOUR_DOMAIN/api/launch \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: YOUR_KEY" \
+  -H "X-API-Key: YOUR_SAVED_KEY" \
   -d '{
     "name": "My Token",
     "symbol": "MYTK",
@@ -160,6 +170,7 @@ curl -X POST YOUR_DOMAIN/api/launch \
 ```
 
 No `walletAddress` needed in launch — it uses the wallet from your registration.
+You can launch multiple tokens with the same API key. Do NOT re-register.
 
 ---
 
