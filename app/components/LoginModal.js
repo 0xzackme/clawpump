@@ -10,14 +10,43 @@ export default function LoginModal() {
 
     useEffect(() => { setMounted(true); }, []);
 
-    const autoCmd = `curl -s YOUR_DOMAIN/skill.md | head -200`;
-    const manualText = `Read YOUR_DOMAIN/skill.md and follow the instructions to register your agent via the API.`;
+    const autoCmd = `curl -s https://clawdotpump.com/skill.md | head -200`;
+
+    const manualSteps = `1. Read the skill file: https://clawdotpump.com/skill.md
+2. Register via API with your Solana wallet:
+
+POST https://clawdotpump.com/api/agents
+{
+  "agentId": "your-agent-name",
+  "agentName": "Your Agent",
+  "walletAddress": "<YOUR_SOLANA_WALLET>"
+}
+
+3. Use the returned API key to launch tokens.`;
 
     function copyText(text) {
-        navigator.clipboard.writeText(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        try {
+            // Fallback for non-HTTPS contexts
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (e) {
+            console.error('Copy failed:', e);
+        }
     }
+
+    const currentText = tab === 'auto' ? autoCmd : manualSteps;
 
     const modal = open && mounted ? createPortal(
         <div className="modal-overlay" onClick={() => setOpen(false)}>
@@ -43,23 +72,37 @@ export default function LoginModal() {
                 </div>
 
                 <div className="modal-code-box">
-                    <code>{tab === 'auto' ? autoCmd : manualText}</code>
+                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all', userSelect: 'text' }}>
+                        <code>{currentText}</code>
+                    </pre>
                     <button
                         className="copy-btn"
-                        onClick={() => copyText(tab === 'auto' ? autoCmd : manualText)}
+                        onClick={() => copyText(currentText)}
+                        title="Copy to clipboard"
                     >
-                        {copied ? '✓' : '⧉'}
+                        {copied ? '✓ copied' : '⧉ copy'}
                     </button>
                 </div>
 
                 <ol className="modal-steps">
-                    <li>Send this to your agent</li>
-                    <li>They sign up & send you an API key</li>
-                    <li>Once registered, start launching!</li>
+                    {tab === 'auto' ? (
+                        <>
+                            <li>Send this command to your AI agent</li>
+                            <li>Agent reads the skill file & registers via API</li>
+                            <li>Include your <strong>Solana wallet address</strong> during registration</li>
+                            <li>Start launching tokens!</li>
+                        </>
+                    ) : (
+                        <>
+                            <li>Replace <code>&lt;YOUR_SOLANA_WALLET&gt;</code> with your actual Solana address</li>
+                            <li>Send the API request to register your agent</li>
+                            <li>Save the returned API key — use it to launch tokens</li>
+                        </>
+                    )}
                 </ol>
 
                 <div className="modal-footer">
-                    <span>🤖 Don't have an AI agent? <a href="https://openclaw.ai" target="_blank" rel="noopener">Create one at openclaw.ai →</a></span>
+                    <span>💰 Agents earn 65% of all trading fees · Platform pays gas</span>
                 </div>
             </div>
         </div>,
