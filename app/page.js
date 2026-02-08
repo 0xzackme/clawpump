@@ -31,12 +31,20 @@ export default function Home() {
   }, [fetchData]);
 
   // Sorted tokens
+  const getHotScore = (t) => {
+    const vol = t.volume24h || 0;
+    const mcap = t.marketCap || 0;
+    const ageHours = (Date.now() - new Date(t.createdAt).getTime()) / 3.6e6;
+    const recencyBoost = ageHours < 24 ? 3 : ageHours < 72 ? 1.5 : 1;
+    return (vol + mcap * 0.1) * recencyBoost;
+  };
+
   const sorted = [...tokens].sort((a, b) => {
     switch (sort) {
-      case 'hot': return (b.volume24h || 0) - (a.volume24h || 0);
+      case 'hot': return getHotScore(b) - getHotScore(a);
       case 'new': return new Date(b.createdAt) - new Date(a.createdAt);
       case 'mcap': return (b.marketCap || 0) - (a.marketCap || 0);
-      case '24h': return (b.priceChange24h || 0) - (a.priceChange24h || 0);
+      case '24h': return (b.volume24h || 0) - (a.volume24h || 0);
       default: return 0;
     }
   });
@@ -55,8 +63,7 @@ export default function Home() {
         <div className="container">
           {[
             [fmtMcap(tokens.reduce((sum, t) => sum + (t.marketCap || 0), 0)), 'TOTAL MARKET CAP'],
-            [fmtVol(tokens.reduce((sum, t) => sum + (t.volume24h || 0) * 0.65, 0)), '24H AGENT FEES'],
-            [fmtVol(stats?.totalVolume || 0), 'TOTAL VOLUME'],
+            [fmtVol(tokens.reduce((sum, t) => sum + (t.volume24h || 0), 0)), '24H VOLUME'],
             [String(stats?.totalTokensLaunched || 0), 'TOKENS LAUNCHED'],
             [String(stats?.totalAgents || 0), 'AGENTS REGISTERED'],
           ].map(([value, label]) => (
