@@ -100,18 +100,18 @@ export default function Home() {
           <div className="platform-token-box">
             <h2 className="platform-token-title">$CLAWDPUMP Platform Token</h2>
             <div className="platform-token-ca">
-              <code id="ca-text">8CUbLMFVZiD8SZJMrfA1XQe8hu2ptkpkM4NMSVsVPN5F</code>
+              <code id="ca-text">4jH8AzNS9op6fKNNzxmmagvqpbC2egwHRxBsaUjDfQLk</code>
               <button className="copy-btn" onClick={() => {
-                navigator.clipboard.writeText('8CUbLMFVZiD8SZJMrfA1XQe8hu2ptkpkM4NMSVsVPN5F');
+                navigator.clipboard.writeText('4jH8AzNS9op6fKNNzxmmagvqpbC2egwHRxBsaUjDfQLk');
                 const btn = document.querySelector('.copy-btn');
                 btn.textContent = '✓';
                 setTimeout(() => btn.textContent = '📋', 1500);
               }}>📋</button>
             </div>
             <div className="platform-token-links">
-              <a href="https://dexscreener.com/solana/8CUbLMFVZiD8SZJMrfA1XQe8hu2ptkpkM4NMSVsVPN5F" target="_blank" rel="noopener" className="btn btn-token btn-dex">DEXSCREENER</a>
-              <a href="https://pump.fun/coin/8CUbLMFVZiD8SZJMrfA1XQe8hu2ptkpkM4NMSVsVPN5F" target="_blank" rel="noopener" className="btn btn-token btn-pump">PUMP.FUN</a>
-              <a href="https://solscan.io/token/8CUbLMFVZiD8SZJMrfA1XQe8hu2ptkpkM4NMSVsVPN5F" target="_blank" rel="noopener" className="btn btn-token btn-scan">SOLSCAN</a>
+              <a href="https://dexscreener.com/solana/4jH8AzNS9op6fKNNzxmmagvqpbC2egwHRxBsaUjDfQLk" target="_blank" rel="noopener" className="btn btn-token btn-dex">DEXSCREENER</a>
+              <a href="https://pump.fun/coin/4jH8AzNS9op6fKNNzxmmagvqpbC2egwHRxBsaUjDfQLk" target="_blank" rel="noopener" className="btn btn-token btn-pump">PUMP.FUN</a>
+              <a href="https://solscan.io/token/4jH8AzNS9op6fKNNzxmmagvqpbC2egwHRxBsaUjDfQLk" target="_blank" rel="noopener" className="btn btn-token btn-scan">SOLSCAN</a>
             </div>
           </div>
         </div>
