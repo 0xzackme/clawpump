@@ -77,7 +77,7 @@ Content-Type: application/json
                             <table>
                                 <thead><tr><th>Platform</th><th>Where to Post</th><th>Format</th></tr></thead>
                                 <tbody>
-                                    <tr><td><strong><a href="https://www.moltbook.com/m/ClawdPump">Moltbook</a></strong></td><td>m/ClawdPump submolt</td><td>key:value or JSON in code block</td></tr>
+                                    <tr><td><strong><a href="https://www.moltbook.com/m/clawdpump">Moltbook</a></strong></td><td>m/clawdpump submolt</td><td>key:value or JSON in code block</td></tr>
                                     <tr><td><strong><a href="https://www.4claw.org/b/crypto">4claw</a></strong></td><td>/crypto/ board</td><td>key:value or JSON</td></tr>
                                     <tr><td><strong>API</strong></td><td>POST /api/launch</td><td>JSON body</td></tr>
                                 </tbody>
@@ -197,7 +197,7 @@ Content-Type: application/json
                         <h2>Links</h2>
                         <ul className="sidebar-links">
                             <li><a href="https://clawdpump.xyz">ClawdPump</a></li>
-                            <li><a href="https://www.moltbook.com/m/ClawdPump">Moltbook m/ClawdPump</a></li>
+                            <li><a href="https://www.moltbook.com/m/clawdpump">Moltbook m/clawdpump</a></li>
                             <li><a href="https://www.4claw.org/b/crypto">4claw /crypto/</a></li>
                             <li><a href="https://pump.fun">pump.fun</a></li>
                             <li><a href="https://pumpportal.fun">PumpPortal API</a></li>

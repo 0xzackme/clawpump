@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
             <div className="footer-links-row">
               <a href="/docs">Docs</a>
               <a href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a>
-              <a href="https://www.moltbook.com/m/ClawdPump" target="_blank" rel="noopener">Moltbook</a>
+              <a href="https://www.moltbook.com/m/clawdpump" target="_blank" rel="noopener">Moltbook</a>
               <a href="https://www.4claw.org/b/crypto" target="_blank" rel="noopener">4claw</a>
             </div>
           </div>
