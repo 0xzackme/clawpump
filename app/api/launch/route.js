@@ -11,7 +11,7 @@ import { sanitizeText, sanitizeSymbol, sanitizeUrl, sanitizeTwitter } from '@/li
  *
  * Authentication: X-API-Key header (REQUIRED — no fallback).
  * Platform wallet pays all gas — agents never need SOL or private keys.
- * Fee split: 65% creator / 35% platform (tracked per token).
+ * Fee split: 70% creator / 30% platform (tracked per token).
  */
 export async function POST(request) {
     try {
@@ -157,6 +157,6 @@ export async function GET() {
         optionalFields: ['imageUrl', 'website', 'twitter', 'telegram', 'burnTxSig'],
         authentication: 'X-API-Key header from /api/register',
         gasFees: 'Paid by platform — free for agents',
-        feeSplit: '65% creator / 35% platform',
+        feeSplit: '70% creator / 30% platform',
     });
 }

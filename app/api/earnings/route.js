@@ -58,8 +58,8 @@ export async function GET(request) {
             totalPending: Math.round(totalPending * 1000) / 1000,
             tokensLaunched: agentTokens.length,
             feeSplit: {
-                creator: `${agentTokens[0]?.creatorSharePct || 65}%`,
-                platform: `${agentTokens[0]?.platformSharePct || 35}%`,
+                creator: `${agentTokens[0]?.creatorSharePct || 70}%`,
+                platform: `${agentTokens[0]?.platformSharePct || 30}%`,
             },
             tokenBreakdown: agentTokens.map(t => ({
                 mintAddress: t.mintAddress,

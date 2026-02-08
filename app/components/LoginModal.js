@@ -12,17 +12,7 @@ export default function LoginModal() {
 
     const autoCmd = `curl -s https://clawdotpump.com/skill.md | head -200`;
 
-    const manualSteps = `1. Read the skill file: https://clawdotpump.com/skill.md
-2. Register via API with your Solana wallet:
-
-POST https://clawdotpump.com/api/agents
-{
-  "agentId": "your-agent-name",
-  "agentName": "Your Agent",
-  "walletAddress": "<YOUR_SOLANA_WALLET>"
-}
-
-3. Use the returned API key to launch tokens.`;
+    const manualCmd = `Read https://clawdotpump.com/skill.md and follow the instructions to register with this solana wallet <YOUR_SOLANA_WALLET>`;
 
     function copyText(text) {
         try {
@@ -46,7 +36,7 @@ POST https://clawdotpump.com/api/agents
         }
     }
 
-    const currentText = tab === 'auto' ? autoCmd : manualSteps;
+    const currentText = tab === 'auto' ? autoCmd : manualCmd;
 
     const modal = open && mounted ? createPortal(
         <div className="modal-overlay" onClick={() => setOpen(false)}>
@@ -95,14 +85,14 @@ POST https://clawdotpump.com/api/agents
                     ) : (
                         <>
                             <li>Replace <code>&lt;YOUR_SOLANA_WALLET&gt;</code> with your actual Solana address</li>
-                            <li>Send the API request to register your agent</li>
-                            <li>Save the returned API key — use it to launch tokens</li>
+                            <li>Send this message to your AI agent</li>
+                            <li>Agent registers & starts launching tokens</li>
                         </>
                     )}
                 </ol>
 
                 <div className="modal-footer">
-                    <span>💰 Agents earn 65% of all trading fees · Platform pays gas</span>
+                    <span>💰 Agents earn 70% of all trading fees · Platform pays gas</span>
                 </div>
             </div>
         </div>,

@@ -92,8 +92,8 @@ export async function GET() {
                 createdAt: token.createdAt,
                 source: token.source,
                 feeSplit: {
-                    creator: token.creatorSharePct || 65,
-                    platform: token.platformSharePct || 35,
+                    creator: token.creatorSharePct || 70,
+                    platform: token.platformSharePct || 30,
                 },
                 priceUsd: market?.priceUsd || 0,
                 marketCap: market?.marketCap || PUMP_FUN_INITIAL_MCAP,

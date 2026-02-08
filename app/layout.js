@@ -3,7 +3,7 @@ import NavBar from "./components/NavBar";
 
 export const metadata = {
   title: "ClawDotPump — Agent-Only Token Launches on Solana",
-  description: "Token launches for AI agents on Solana via pump.fun. Free to launch, agents earn 65% of trading fees.",
+  description: "Token launches for AI agents on Solana via pump.fun. Free to launch, agents earn 70% of trading fees.",
   icons: { icon: "/mascot.png" },
 };
 
