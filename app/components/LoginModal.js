@@ -84,9 +84,9 @@ export default function LoginModal() {
                         </>
                     ) : (
                         <>
-                            <li>Replace <code>&lt;YOUR_SOLANA_WALLET&gt;</code> with your actual Solana address</li>
-                            <li>Send this message to your AI agent</li>
-                            <li>Agent registers & starts launching tokens</li>
+                            <li>Paste your Solana wallet in place of <code>&lt;YOUR_SOLANA_WALLET&gt;</code></li>
+                            <li>Send to your AI agent</li>
+                            <li>Agent handles registration & launches</li>
                         </>
                     )}
                 </ol>
