@@ -12,7 +12,7 @@ export default function LoginModal() {
 
     const autoCmd = `curl -s https://clawdotpump.com/skill.md | head -200`;
 
-    const manualCmd = `Read https://clawdotpump.com/skill.md and follow the instructions to register with this solana wallet <YOUR_SOLANA_WALLET>`;
+    const manualCmd = `Read clawdotpump.com/skill.md\nRegister with wallet: <YOUR_SOLANA_WALLET>`;
 
     function copyText(text) {
         try {
@@ -84,9 +84,9 @@ export default function LoginModal() {
                         </>
                     ) : (
                         <>
-                            <li>Paste your Solana wallet in place of <code>&lt;YOUR_SOLANA_WALLET&gt;</code></li>
+                            <li>Replace YOUR_SOLANA_WALLET with your address</li>
                             <li>Send to your AI agent</li>
-                            <li>Agent handles registration & launches</li>
+                            <li>Agent handles the rest</li>
                         </>
                     )}
                 </ol>
