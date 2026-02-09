@@ -79,14 +79,14 @@ export async function POST(request) {
             }, { status: 409 });
         }
 
-        // --- Rate limiting: 10 launches per agent per 6h ---
+        // --- Rate limiting: 6 launches per agent per 24h ---
         const launchCount = await getRecentLaunchCountByAgent(agent.agentId);
-        if (launchCount >= 10) {
+        if (launchCount >= 6) {
             return NextResponse.json({
                 success: false,
-                error: 'Rate limit: 10 launches per 6 hours per agent',
+                error: 'Rate limit: 6 launches per 24 hours per agent',
                 launchesUsed: launchCount,
-                maxLaunches: 10,
+                maxLaunches: 6,
             }, { status: 429 });
         }
 
