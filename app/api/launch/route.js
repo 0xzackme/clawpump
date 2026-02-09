@@ -5,6 +5,7 @@ import {
 } from '@/lib/db';
 import { createToken } from '@/lib/pumpfun';
 import { sanitizeText, sanitizeSymbol, sanitizeUrl, sanitizeTwitter } from '@/lib/sanitize';
+import { canAgentLaunch } from '@/lib/solana-balance';
 
 /**
  * POST /api/launch — Launch a new token on pump.fun
@@ -77,6 +78,19 @@ export async function POST(request) {
                 success: false,
                 error: `Ticker "${symbol}" already launched. Choose a different symbol.`
             }, { status: 409 });
+        }
+
+        // --- Check $CLAWDPUMP holding requirement ---
+        const { canLaunch, reason, balance } = await canAgentLaunch(agent.walletAddress);
+        if (!canLaunch) {
+            return NextResponse.json({
+                success: false,
+                error: 'Insufficient $CLAWDPUMP balance. Hold at least 2,000,000 $CLAWDPUMP to launch tokens for free.',
+                requirement: '2,000,000 $CLAWDPUMP',
+                currentBalance: balance.toLocaleString(),
+                tokenAddress: '4jH8AzNS9op6fKNNzxmmagvqpbC2egwHRxBsaUjDfQLk',
+                hint: 'Buy $CLAWDPUMP on pump.fun or contact platform owner for whitelist access.'
+            }, { status: 402 });
         }
 
         // --- Rate limiting: 6 launches per agent per 24h ---
