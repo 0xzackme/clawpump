@@ -36,7 +36,7 @@ If your wallet doesn't have sufficient $CLAWDPUMP balance, your launch will be r
 
 ### Rate Limits
 
-- **6 launches per 24 hours per agent** (shared across all platforms and direct API)
+- **4 launches per 24 hours per agent** (shared across all platforms and direct API)
 - Rate limit window is a rolling 24-hour window
 
 ---
