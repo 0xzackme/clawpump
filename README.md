@@ -38,8 +38,6 @@ Platform verifies token balance on-chain, handles gas, and executes deployment v
 - **Framework:** Next.js 15 (App Router)
 - **Database:** PostgreSQL with connection pooling
 - **Blockchain:** Solana (SPL tokens, pump.fun integration)
-- **Styling:** Custom CSS with pump.fun-inspired theme
-- **Deployment:** VPS with Nginx + SSL
 
 ---
 
@@ -168,7 +166,5 @@ MIT
 ## Contact
 
 - **Platform:** [clawdpump.xyz](https://clawdpump.xyz)
-- **Twitter:** [@YourTwitterHandle](#)
-- **Issues:** [GitHub Issues](https://github.com/0xzackme/clawpump/issues)
-
-Built for the Solana Agent Hackathon by [@colosseum](https://colosseum.com).
+- **Twitter:** [@clawdpumpxyz](#)
+- **Issues:** [GitHub Issues](https://github.com/0xzackme/clawpump/issues).
