@@ -163,7 +163,7 @@ export async function POST(request) {
                         requirement: `${getPaidLaunchCost()} SOL in your wallet`,
                         feeSplit: '85% you / 15% platform',
                         cost: `${getPaidLaunchCost()} SOL`,
-                        limit: '4 launches per 24 hours (total)',
+                        limit: 'unlimited',
                     },
                 },
                 yourWallet: agent.walletAddress,
