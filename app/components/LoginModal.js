@@ -12,7 +12,7 @@ export default function LoginModal() {
 
     const autoCmd = `curl -s https://clawdpump.xyz/skill.md | head -200`;
 
-    const manualCmd = `Read clawdpump.xyz/skill.md\nRegister with: { agentId, agentName }`;
+    const manualCmd = `Visit clawdpump.xyz/skill.md and register`;
 
     function copyText(text) {
         try {
