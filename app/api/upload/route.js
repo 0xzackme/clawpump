@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server';
  * POST /api/upload — Upload an image and get a direct URL
  *
  * Rate limited: 20 uploads per hour per IP.
- * Accepts base64 or URL re-hosting.
+ * Accepts:
+ *   - JSON body: { image: "base64_data" } or { image: "https://..." }
+ *   - Multipart form-data: file field named "image"
  */
 
 const FREEIMAGE_KEY = process.env.FREEIMAGE_KEY || '6d207e02198a847aa98d0a2a901485a5';
@@ -48,68 +50,105 @@ export async function POST(request) {
             }, { status: 429 });
         }
 
-        const body = await request.json();
-        const { image, name } = body;
-
-        if (!image) {
-            return NextResponse.json({
-                success: false,
-                error: 'Missing "image" field. Provide base64 data or an image URL.',
-            }, { status: 400 });
-        }
-
-        // Validate size (max 10MB base64)
-        if (typeof image === 'string' && image.length > 10 * 1024 * 1024) {
-            return NextResponse.json({
-                success: false,
-                error: 'Image too large. Max 10MB.',
-            }, { status: 400 });
-        }
-
         let base64Data;
+        let fileName = 'upload';
 
-        if (image.startsWith('http://') || image.startsWith('https://')) {
-            // Block internal/private URLs (SSRF protection)
-            try {
-                const url = new URL(image);
-                const host = url.hostname.toLowerCase();
-                if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host.endsWith('.local') || host.startsWith('10.') || host.startsWith('192.168.') || host.startsWith('172.')) {
-                    return NextResponse.json({ success: false, error: 'Internal URLs not allowed' }, { status: 400 });
-                }
-            } catch {
-                return NextResponse.json({ success: false, error: 'Invalid image URL' }, { status: 400 });
-            }
+        const contentType = request.headers.get('content-type') || '';
 
-            try {
-                const imgRes = await fetch(image, { signal: AbortSignal.timeout(10000) });
-                if (!imgRes.ok) throw new Error(`Failed to fetch image: ${imgRes.status}`);
+        if (contentType.includes('multipart/form-data')) {
+            // Handle multipart/form-data file upload
+            const formData = await request.formData();
+            const file = formData.get('image');
+            fileName = formData.get('name') || 'upload';
 
-                // Validate content type
-                const contentType = imgRes.headers.get('content-type') || '';
-                if (!contentType.startsWith('image/')) {
-                    return NextResponse.json({ success: false, error: 'URL must point to an image' }, { status: 400 });
-                }
-
-                const buffer = await imgRes.arrayBuffer();
-                if (buffer.byteLength > 10 * 1024 * 1024) {
-                    return NextResponse.json({ success: false, error: 'Image too large. Max 10MB.' }, { status: 400 });
-                }
-                base64Data = Buffer.from(buffer).toString('base64');
-            } catch (e) {
+            if (!file || !(file instanceof File)) {
                 return NextResponse.json({
                     success: false,
-                    error: `Failed to download image: ${e.message}`,
+                    error: 'Missing "image" file field in multipart form data.',
                 }, { status: 400 });
             }
+
+            // Validate content type
+            if (!file.type.startsWith('image/')) {
+                return NextResponse.json({
+                    success: false,
+                    error: 'File must be an image (image/png, image/jpeg, etc.)',
+                }, { status: 400 });
+            }
+
+            // Validate size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                return NextResponse.json({
+                    success: false,
+                    error: 'Image too large. Max 10MB.',
+                }, { status: 400 });
+            }
+
+            const arrayBuffer = await file.arrayBuffer();
+            base64Data = Buffer.from(arrayBuffer).toString('base64');
         } else {
-            base64Data = image.replace(/^data:image\/[a-z]+;base64,/, '');
+            // Handle JSON body
+            const body = await request.json();
+            const { image, name } = body;
+            if (name) fileName = name;
+
+            if (!image) {
+                return NextResponse.json({
+                    success: false,
+                    error: 'Missing "image" field. Provide base64 data, an image URL, or upload via multipart/form-data.',
+                }, { status: 400 });
+            }
+
+            // Validate size (max 10MB base64)
+            if (typeof image === 'string' && image.length > 10 * 1024 * 1024) {
+                return NextResponse.json({
+                    success: false,
+                    error: 'Image too large. Max 10MB.',
+                }, { status: 400 });
+            }
+
+            if (image.startsWith('http://') || image.startsWith('https://')) {
+                // Block internal/private URLs (SSRF protection)
+                try {
+                    const url = new URL(image);
+                    const host = url.hostname.toLowerCase();
+                    if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host.endsWith('.local') || host.startsWith('10.') || host.startsWith('192.168.') || host.startsWith('172.')) {
+                        return NextResponse.json({ success: false, error: 'Internal URLs not allowed' }, { status: 400 });
+                    }
+                } catch {
+                    return NextResponse.json({ success: false, error: 'Invalid image URL' }, { status: 400 });
+                }
+
+                try {
+                    const imgRes = await fetch(image, { signal: AbortSignal.timeout(10000) });
+                    if (!imgRes.ok) throw new Error(`Failed to fetch image: ${imgRes.status}`);
+
+                    const imgContentType = imgRes.headers.get('content-type') || '';
+                    if (!imgContentType.startsWith('image/')) {
+                        return NextResponse.json({ success: false, error: 'URL must point to an image' }, { status: 400 });
+                    }
+
+                    const buffer = await imgRes.arrayBuffer();
+                    if (buffer.byteLength > 10 * 1024 * 1024) {
+                        return NextResponse.json({ success: false, error: 'Image too large. Max 10MB.' }, { status: 400 });
+                    }
+                    base64Data = Buffer.from(buffer).toString('base64');
+                } catch (e) {
+                    return NextResponse.json({
+                        success: false,
+                        error: `Failed to download image: ${e.message}`,
+                    }, { status: 400 });
+                }
+            } else {
+                base64Data = image.replace(/^data:image\/[a-z]+;base64,/, '');
+            }
         }
 
         const formData = new URLSearchParams();
         formData.append('source', base64Data);
         formData.append('type', 'base64');
         formData.append('action', 'upload');
-        if (name) formData.append('title', name);
+        if (fileName) formData.append('title', fileName);
 
         const uploadRes = await fetch(`https://freeimage.host/api/1/upload?key=${FREEIMAGE_KEY}`, {
             method: 'POST',
@@ -147,6 +186,7 @@ export async function GET() {
         usage: {
             base64: 'POST with { "image": "base64_data", "name": "logo" }',
             url: 'POST with { "image": "https://example.com/image.png" }',
+            multipart: 'POST with multipart/form-data, field name "image" (file) + optional "name"',
         },
         limits: `${UPLOAD_LIMIT} uploads per hour per IP, max 10MB`,
     });

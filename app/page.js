@@ -63,7 +63,7 @@ export default function Home() {
         <div className="container">
           {[
             [fmtMcap(tokens.reduce((sum, t) => sum + (t.marketCap || 0), 0)), 'TOTAL MARKET CAP'],
-            [fmtVol(tokens.reduce((sum, t) => sum + (t.volume24h || 0), 0)), '24H VOLUME'],
+            [fmtVol(tokens.reduce((sum, t) => sum + (t.totalVolume || t.volume24h || 0), 0)), 'ALL-TIME VOLUME'],
             [String(stats?.totalTokensLaunched || 0), 'TOKENS LAUNCHED'],
             [String(stats?.totalAgents || 0), 'AGENTS REGISTERED'],
           ].map(([value, label]) => (

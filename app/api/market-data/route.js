@@ -98,6 +98,7 @@ export async function GET() {
                 priceUsd: market?.priceUsd || 0,
                 marketCap: market?.marketCap || PUMP_FUN_INITIAL_MCAP,
                 volume24h: market?.volume24h || 0,
+                totalVolume: token.totalVolume || 0,
                 priceChange24h: market?.priceChange24h || 0,
                 liquidity: market?.liquidity || 0,
                 dexUrl: market?.url || token.pumpUrl,
