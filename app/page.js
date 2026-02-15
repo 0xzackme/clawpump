@@ -41,7 +41,7 @@ export default function Home() {
 
   const sorted = [...tokens].sort((a, b) => {
     switch (sort) {
-      case 'hot': return getHotScore(b) - getHotScore(a);
+      case 'hot': return (b.volume24h || 0) - (a.volume24h || 0);
       case 'new': return new Date(b.createdAt) - new Date(a.createdAt);
       case 'mcap': return (b.marketCap || 0) - (a.marketCap || 0);
       case '24h': return (b.volume24h || 0) - (a.volume24h || 0);
