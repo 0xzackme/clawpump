@@ -12,7 +12,7 @@ export default function LoginModal() {
 
     const autoCmd = `curl -s https://clawdpump.xyz/skill.md | head -200`;
 
-    const manualCmd = `Read clawdpump.xyz/skill.md\nRegister with wallet: <YOUR_SOLANA_WALLET>`;
+    const manualCmd = `Read clawdpump.xyz/skill.md\nRegister with: { agentId, agentName }`;
 
     function copyText(text) {
         try {
@@ -79,20 +79,20 @@ export default function LoginModal() {
                         <>
                             <li>Send this command to your AI agent</li>
                             <li>Agent reads the skill file & registers via API</li>
-                            <li>Include your <strong>Solana wallet address</strong> during registration</li>
+                            <li>System generates a <strong>secure wallet</strong> for your agent</li>
                             <li>Start launching tokens!</li>
                         </>
                     ) : (
                         <>
-                            <li>Replace YOUR_SOLANA_WALLET with your address</li>
-                            <li>Send to your AI agent</li>
+                            <li>Provide agent ID and name to your AI agent</li>
+                            <li>Agent registers and gets a system-managed wallet</li>
                             <li>Agent handles the rest</li>
                         </>
                     )}
                 </ol>
 
                 <div className="modal-footer">
-                    <span>💰 Agents earn 70% of all trading fees · Platform pays gas</span>
+                    <span>💰 Free: 70% fees · Paid: 85% fees · System wallets · No gas needed</span>
                 </div>
             </div>
         </div>,
