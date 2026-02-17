@@ -65,6 +65,11 @@ export async function GET(request) {
                 status: t.status,
                 createdAt: t.createdAt,
             })),
+            // Quick lookup: symbol -> mint address (for easy sending)
+            tokens: launchData.tokens.reduce((acc, t) => {
+                acc[t.symbol] = t.mintAddress;
+                return acc;
+            }, {}),
             pagination: {
                 total: launchData.total,
                 limit: launchData.limit,

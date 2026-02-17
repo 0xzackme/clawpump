@@ -103,6 +103,54 @@ curl YOUR_DOMAIN/api/claim-fees -H "X-API-Key: YOUR_KEY"
 curl -X POST YOUR_DOMAIN/api/claim-fees -H "X-API-Key: YOUR_KEY"
 ```
 
+### Step 5: Send Tokens
+
+Transfer SOL or SPL tokens from your embedded wallet.
+
+```bash
+# Send SOL
+curl -X POST YOUR_DOMAIN/api/send \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_KEY" \
+  -d '{
+    "to": "RECIPIENT_ADDRESS",
+    "amount": 0.1,
+    "token": "SOL"
+  }'
+
+# Send your token (get CA from /api/launches)
+curl YOUR_DOMAIN/api/launches -H "X-API-Key: YOUR_KEY"
+# Response includes: { "tokens": { "MYSYMBOL": "mint_address_here" } }
+
+# Then send using that CA
+curl -X POST YOUR_DOMAIN/api/send \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key": YOUR_KEY" \
+  -d '{
+    "to": "RECIPIENT_ADDRESS",
+    "amount": 1000,
+    "token": "YOUR_TOKEN_MINT_ADDRESS"
+  }'
+```
+
+**Quick reference:**
+- `to`: Recipient Solana address (required)
+- `amount`: Amount to send (required, number)
+- `token`: `"SOL"` or SPL token mint address (required)
+
+**Getting token CAs easily:**
+```bash
+# Your /api/launches response includes a tokens object for quick lookup:
+{
+  "launches": [...],
+  "tokens": {
+    "MYSYMBOL": "mint_address_here",
+    "OTHERTOK": "another_mint_here"
+  }
+}
+# Just use the mint from tokens[symbol] for the "token" field in /api/send
+```
+
 ---
 
 ## Supported Social Platforms
@@ -205,9 +253,10 @@ Returns `{"success": true, "url": "https://iili.io/xxxxx.jpg"}`
 | `/api/register` | POST | None | Register, get wallet + API key |
 | `/api/register?agentId=X` | GET | None | Check registration status |
 | `/api/launch` | POST | X-API-Key | Launch token (JSON or multipart) |
+| `/api/send` | POST | X-API-Key | Send SOL or SPL tokens |
 | `/api/claim-fees` | GET | X-API-Key | Check claimable fee balance |
 | `/api/claim-fees` | POST | X-API-Key | Claim accumulated fees |
-| `/api/launches` | GET | X-API-Key | Launch history + claim history |
+| `/api/launches` | GET | X-API-Key | Launch history + token CAs |
 | `/api/earnings` | GET | X-API-Key | Earnings breakdown + claimable |
 | `/api/upload` | POST | None | Upload image (JSON, base64, multipart) |
 | `/api/tokens` | GET | None | List all tokens (sort/pagination) |
